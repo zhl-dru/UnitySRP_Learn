@@ -10,6 +10,7 @@ using UnityEngine.Rendering;
 public class CustomRenderPipeline : RenderPipeline
 {
     CameraRenderer renderer = new CameraRenderer();
+    bool useDynamicBatching, useGPUInstancing;
 
     /*
      * 由于相机数组参数需要在每帧中分配内存
@@ -29,7 +30,17 @@ public class CustomRenderPipeline : RenderPipeline
     {
         for (int i = 0; i < cameras.Count; i++)
         {
-            renderer.Render(context, cameras[i]);
+            renderer.Render(context, cameras[i], useDynamicBatching, useGPUInstancing);
         }
+    }
+
+    public CustomRenderPipeline(
+        bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher
+    )
+    {
+        this.useDynamicBatching = useDynamicBatching;
+        this.useGPUInstancing = useGPUInstancing;
+        // 启用SRP批处理
+        GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
     }
 }

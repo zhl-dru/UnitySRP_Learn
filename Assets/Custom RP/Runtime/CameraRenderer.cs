@@ -32,7 +32,9 @@ public partial class CameraRenderer
 
 
 
-    public void Render(ScriptableRenderContext context, Camera camera)
+    public void Render(
+        ScriptableRenderContext context, Camera camera,
+        bool useDynamicBatching, bool useGPUInstancing)
     {
         // 设置相机和渲染状态,命令缓存
         this.context = context;
@@ -48,7 +50,7 @@ public partial class CameraRenderer
         }
 
         Setup();
-        DrawVisibleGeometry();
+        DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         DrawUnsupportedShaders();
         DrawGizmos();
         Submit();
@@ -58,7 +60,7 @@ public partial class CameraRenderer
     /// 绘制可见的几何体
     /// 负责绘制场景中所有可见的网格
     /// </summary>
-    void DrawVisibleGeometry()
+    void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing)
     {
         /*
          * 绘制可见对象需要三个设置
@@ -75,7 +77,11 @@ public partial class CameraRenderer
         };
         var drawingSettings = new DrawingSettings(
             unlitShaderTagId, sortingSettings
-            );
+            )
+        {
+            enableDynamicBatching = useDynamicBatching,
+            enableInstancing = useGPUInstancing
+        };
         var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
 
         context.DrawRenderers(
@@ -106,8 +112,8 @@ public partial class CameraRenderer
         // 清理渲染渲染目标中的旧内容
         CameraClearFlags flags = camera.clearFlags;
         buffer.ClearRenderTarget(
-            flags <= CameraClearFlags.Depth, 
-            flags <= CameraClearFlags.Color, 
+            flags <= CameraClearFlags.Depth,
+            flags <= CameraClearFlags.Color,
             flags == CameraClearFlags.Color ?
                 camera.backgroundColor.linear : Color.clear);
         // 开始调试分析器采样
