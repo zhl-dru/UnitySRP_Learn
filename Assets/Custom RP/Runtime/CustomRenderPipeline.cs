@@ -42,5 +42,7 @@ public class CustomRenderPipeline : RenderPipeline
         this.useGPUInstancing = useGPUInstancing;
         // 启用SRP批处理
         GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
+        // 启用Linear颜色空间
+        GraphicsSettings.lightsUseLinearIntensity = true;
     }
 }
